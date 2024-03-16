@@ -1,0 +1,13 @@
+.gallery-item {
+    width: 25%;
+    float: left;
+}
+
+
+.clear-fix {
+    clear: both;
+}
+.gallery-item img {
+    width: 100%;
+    display: block;
+}
