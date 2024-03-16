@@ -1,13 +1,13 @@
 import 'dotenv/config'
 
-
+import cors from 'cors'
 import express from 'express'
 import { dbConnection } from './db/connection.js';
 import { allRoutes } from './src/modules/routes.js';
 const app = express()
 const port = 3000;
 
-
+app.use(cors())
 app.use("/uploads",express.static("uploads"))
 app.use(express.json());
 
@@ -27,4 +27,4 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode).send({message:err.message, stack: err.stack})
   })
   
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen( process.env.PORT ||  port, () => console.log(`Example app listening on port ${port}!`))
