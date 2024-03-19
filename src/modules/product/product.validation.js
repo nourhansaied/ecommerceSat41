@@ -21,7 +21,7 @@ const addProductSchema = Joi.object({
         filename: Joi.string().required(),
         path: Joi.string().required(),
         size: Joi.number().max(5242880).required()
-    }).required()).required(),
+    })),
     images: Joi.array().items(Joi.object({
         fieldname: Joi.string().required(),
         originalname: Joi.string().required(),
@@ -31,7 +31,7 @@ const addProductSchema = Joi.object({
         filename: Joi.string().required(),
         path: Joi.string().required(),
         size: Joi.number().max(5242880).required()
-    }).required()).required()
+    }))
 });
 
 

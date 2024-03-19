@@ -28,3 +28,9 @@ app.use((err, req, res, next) => {
   })
   
 app.listen( process.env.PORT ||  port, () => console.log(`Example app listening on port ${port}!`))
+
+
+// onLine ... 30min 
+// docker 
+// qrCode
+// cron job
