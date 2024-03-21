@@ -6,6 +6,7 @@ import productModel from '../../../../db/models/product.model.js';
 import catchError from '../../../middleware/catchError.js';
 import AppError from '../../../utils/appError.js';
 import Stripe from 'stripe';
+import express from 'express'
 const stripe = new Stripe('sk_test_51JjJRNFBzUQr5ynVSBFGtyCLfuBBEoAc3tAP4jXywtFS2QjjaEPiQ2iqsKJPabYQd5TjGTIPhO9ZZCaGcjObfUqV00SIUjx6gv');
 const createCashOrder = catchError(async(req,res,next) => {
 
@@ -114,7 +115,7 @@ const app = express();
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 
-app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
+app.post('/webhook', express.raw({type: 'application/json'}), async(req, res) => {
   const sig = req.headers['stripe-signature'];
 
   let event;
@@ -143,7 +144,6 @@ app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
 
 app.listen(4242, () => console.log('Running on port 4242'));
 
-const createOnlineOrder = catchError(async())
 export {
    createCashOrder,
    getSpaificOrder,
