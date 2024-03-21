@@ -19,7 +19,6 @@ orderRoutes.route("/")
 //     orderRoutes.route("/:id")
 //         .patch(protectedRoutes,validation(QueryIdVal), removeItem)
 orderRoutes.get("/all", protectedRoutes,allowTo('admin'), getAllOrders)
-orderRoutes.post("/online/:id",protectedRoutes,createCheckoutSession)
 export default orderRoutes;
 
 

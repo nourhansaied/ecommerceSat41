@@ -5,8 +5,6 @@ import orderModel from '../../../../db/models/order.model.js';
 import productModel from '../../../../db/models/product.model.js';
 import catchError from '../../../middleware/catchError.js';
 import AppError from '../../../utils/appError.js';
-import Stripe from 'stripe';
-const stripe = new Stripe('sk_test_51JjJRNFBzUQr5ynVSBFGtyCLfuBBEoAc3tAP4jXywtFS2QjjaEPiQ2iqsKJPabYQd5TjGTIPhO9ZZCaGcjObfUqV00SIUjx6gv');
 
 const createCashOrder = catchError(async(req,res,next) => {
 
@@ -61,63 +59,12 @@ const getAllOrders = catchError(async(req,res,next) => {
     res.json({message :"Done", order})
 })
 
-const createCheckoutSession = catchError(async(req,res,next) => {
-    const cart = await cartModel.findById(req.params.id);
-    let orderTotalPrice = cart.totalPriceAfterDiscount ? cart.totalPriceAfterDiscount: cart.totalPrice;
 
-   let session =  await stripe.checkout.sessions.create({
-        line_items: [
-            {
-                price_data: {
-                    currency :"EGP",
-                    unit_amount : orderTotalPrice * 100,
-                    product_data: {
-                        name: req.user.name
-                    },
-                },
-                quantity: 1
-            }
-        ],
-        mode:'payment',
-        success_url:"http://localhost:4200/en",
-        cancel_url:"http://localhost:4200/en/404",
-        client_reference_id: req.params.id,
-        customer_email : req.user.email,
-        metadata : req.body.shippingAddress
-    });
-    res.json({message:"asd", session})
-})
-
-
-const creatOnline = catchError(async (request, response) => {
-    console.log(request);
-    const sig = request.headers['stripe-signature'] || request.headers['Stripe-Signature'] ;
-  
-    let event;
-  
-    try {
-      event = stripe.webhooks.constructEvent(request.body, sig, "whsec_eoO2U0jD7n8HkrMVXkQrlH7e73HWuTmw");
-    } catch (err) {
-      return response.status(400).send(`Webhook Error: ${err.message}`);
-      
-    }
-  
-    // Handle the event
-    if(event.type == "checkout.session.completed") {
-      const checkoutSessionCompleted = event.data.object;
-      console.log(checkoutSessionCompleted);
-    }else {
-      console.log(`Unhandled event type ${event.type}`);
-  
-    }
-    response.json({message:"done"})
-  })
 export {
    createCashOrder,
    getSpaificOrder,
    getAllOrders,
-   createCheckoutSession,
-   creatOnline
+
 
 }
 
