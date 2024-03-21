@@ -91,7 +91,7 @@ const createCheckoutSession = catchError(async(req,res,next) => {
 
 const creatOnline = catchError(async (request, response) => {
     console.log(request);
-    const sig = request.headers['stripe-signature'];
+    const sig = request.headers['stripe-signature'] || request.headers['Stripe-Signature'] ;
   
     let event;
   
@@ -110,6 +110,7 @@ const creatOnline = catchError(async (request, response) => {
       console.log(`Unhandled event type ${event.type}`);
   
     }
+    response.json({message:"done"})
   })
 export {
    createCashOrder,
