@@ -30,7 +30,7 @@ const stripe = new Stripe('sk_test_51JjJRNFBzUQr5ynVSBFGtyCLfuBBEoAc3tAP4jXywtFS
 const endpointSecret = "whsec_oF9BdQJNDPjLTN4G15iUl4YM9LH1Xp3o";
 
 app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
-  const sig = request.headers['stripe-signature'].toString();
+  const sig = request.headers['stripe-signature'];
 
   let event;
 
