@@ -96,7 +96,7 @@ const createSessionURL = catchError(async(req,res,next) => {
 });
 
 
-const app = express();
+
 
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
