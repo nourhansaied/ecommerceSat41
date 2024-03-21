@@ -7,6 +7,7 @@ import catchError from '../../../middleware/catchError.js';
 import AppError from '../../../utils/appError.js';
 import Stripe from 'stripe';
 import express from 'express'
+import userModel from '../../../../db/models/user.model.js';
 const stripe = new Stripe('sk_test_51JjJRNFBzUQr5ynVSBFGtyCLfuBBEoAc3tAP4jXywtFS2QjjaEPiQ2iqsKJPabYQd5TjGTIPhO9ZZCaGcjObfUqV00SIUjx6gv');
 const createCashOrder = catchError(async(req,res,next) => {
 
@@ -101,7 +102,7 @@ const createSessionURL = catchError(async(req,res,next) => {
 
 // This is your Stripe CLI webhook secret for testing your endpoint locally.
 
-const createOnloneOrder =  catchError((async(req, res) => {
+const createOnloneOrder =  catchError((async(req, res,next) => {
   const sig = req.headers['stripe-signature'];
 
   let event;
@@ -115,9 +116,43 @@ const createOnloneOrder =  catchError((async(req, res) => {
 
 
   if(event.type == "checkout.session.completed") {
-    const checkoutSessionCompleted = event.data.object;
+    const e = event.data.object;
     // create order
-    console.log("done");
+
+    let cart = await cartModel.findById(e.client_reference_id)
+    if(!cart) next(new AppError("not valid cart", 400))
+
+    let user = await userModel.findOne({email: e.customer_email})
+    if(!user) next(new AppError("not valid user", 400))
+
+    let order = new orderModel({
+        user: user._id,
+        orderItems: cart.cartItems,
+        totalPrice: e.amount_total / 100,
+        shippingAddress : e.metadata
+    });
+
+    
+    await order.save()
+
+
+
+    let options = cart.cartItems.map(ele =>{
+        return (
+            {
+                updateOne:{
+                    filter: {_id: ele.product},
+                    update: { $inc: {sold: ele.quantity,quantity: -ele.quantity}}
+                }
+            }
+        )
+    })
+    
+    await productModel.bulkWrite(options)
+
+    // 5- clear cart
+    await cartModel.findByIdAndDelete(req.params.id)
+
   }else {
     console.log(`Unhandled event type ${event.type}`);
 
