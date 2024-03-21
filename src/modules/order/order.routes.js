@@ -4,7 +4,7 @@
 import express from 'express';
 import { validation } from '../../middleware/validation.js';
 import { allowTo, protectedRoutes } from '../auth/controller/auth.controller.js';
-import { createCashOrder, createSessionURL, getAllOrders, getSpaificOrder } from './controller/order.controller.js';
+import { createCashOrder, createOnloneOrder, createSessionURL, getAllOrders, getSpaificOrder } from './controller/order.controller.js';
 import { createOrderVal } from './order.validation.js';
 const orderRoutes = express.Router();
 
@@ -20,6 +20,8 @@ orderRoutes.route("/")
 //         .patch(protectedRoutes,validation(QueryIdVal), removeItem)
 orderRoutes.get("/all", protectedRoutes,allowTo('admin'), getAllOrders)
 orderRoutes.post("/online/:id",protectedRoutes, createSessionURL)
+
+app.post('/webhook', express.raw({type: 'application/json'}),createOnloneOrder)
 export default orderRoutes;
 
 
