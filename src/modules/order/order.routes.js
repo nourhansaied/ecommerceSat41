@@ -21,7 +21,7 @@ orderRoutes.route("/")
 orderRoutes.get("/all", protectedRoutes,allowTo('admin'), getAllOrders)
 orderRoutes.post("/online/:id",protectedRoutes, createSessionURL)
 
-app.post('/webhook', express.raw({type: 'application/json'}),createOnloneOrder)
+orderRoutes.post('/webhook', express.raw({type: 'application/json'}),createOnloneOrder)
 export default orderRoutes;
 
 
