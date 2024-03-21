@@ -5,7 +5,8 @@ import orderModel from '../../../../db/models/order.model.js';
 import productModel from '../../../../db/models/product.model.js';
 import catchError from '../../../middleware/catchError.js';
 import AppError from '../../../utils/appError.js';
-
+import Stripe from 'stripe';
+const stripe = new Stripe('sk_test_51JjJRNFBzUQr5ynVSBFGtyCLfuBBEoAc3tAP4jXywtFS2QjjaEPiQ2iqsKJPabYQd5TjGTIPhO9ZZCaGcjObfUqV00SIUjx6gv');
 const createCashOrder = catchError(async(req,res,next) => {
 
     // 1- get cart
@@ -60,10 +61,43 @@ const getAllOrders = catchError(async(req,res,next) => {
 })
 
 
+
+const createSessionURL = catchError(async(req,res,next) => {
+    let cart = await cartModel.findById(req.params.id);
+    if(!cart) return next (new AppError("cart not found", 404))
+
+    // 2- total price
+    let orderTotalPrice = cart.totalPriceAfterDiscount ? cart.totalPriceAfterDiscount: cart.totalPrice;
+
+    let session = await stripe.checkout.sessions.create({
+        mode: "payment",
+        success_url: "http://localhost:4200/en",
+        cancel_url: "http://localhost:4200/en/404",
+        line_items: [
+            {
+                price_data: {
+                    currency :"EGP",
+                    unit_amount : orderTotalPrice * 100,
+                    product_data: {
+                        name: req.user.name
+                    },
+                },
+                quantity: 1
+            }
+        ],
+        client_reference_id: req.params.id,
+        customer_email : req.user.email,
+        metadata : req.body.shippingAddress
+    });
+
+
+    res.json({message :"Done", session})
+})
 export {
    createCashOrder,
    getSpaificOrder,
    getAllOrders,
+   createSessionURL
 
 
 }
