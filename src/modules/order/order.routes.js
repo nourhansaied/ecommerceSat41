@@ -4,7 +4,7 @@
 import express from 'express';
 import { validation } from '../../middleware/validation.js';
 import { allowTo, protectedRoutes } from '../auth/controller/auth.controller.js';
-import { createCashOrder, createOnloneOrder, createSessionURL, getAllOrders, getSpaificOrder } from './controller/order.controller.js';
+import { createCashOrder, createCheckoutURL, getAllOrders, getSpaificOrder } from './controller/order.controller.js';
 import { createOrderVal } from './order.validation.js';
 const orderRoutes = express.Router();
 
@@ -19,8 +19,7 @@ orderRoutes.route("/")
 //     orderRoutes.route("/:id")
 //         .patch(protectedRoutes,validation(QueryIdVal), removeItem)
 orderRoutes.get("/all", protectedRoutes,allowTo('admin'), getAllOrders)
-orderRoutes.post("/online/:id",protectedRoutes, createSessionURL)
-
+orderRoutes.post("/checkout/:id", protectedRoutes,createCheckoutURL)
 
 export default orderRoutes;
 
