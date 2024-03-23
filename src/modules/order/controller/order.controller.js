@@ -118,7 +118,7 @@ const createdOnlineOrder = catchError(async(req, res) => {
         // 2- total price
         // 3- create oder
         let order = new orderModel({
-            user: req.user._id,
+            user: checkoutSessionCompleted.customer_email,
             orderItems: cart.cartItems,
             totalPrice: checkoutSessionCompleted.amount_total / 100,
             shippingAddress : checkoutSessionCompleted.metadata,
