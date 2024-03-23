@@ -117,8 +117,9 @@ const createdOnlineOrder = catchError(async(req, res) => {
     
         // 2- total price
         // 3- create oder
+        let user = await userModel.findOne({email: checkoutSessionCompleted.customer_email})
         let order = new orderModel({
-            user: checkoutSessionCompleted.customer_email,
+            user: user._id,
             orderItems: cart.cartItems,
             totalPrice: checkoutSessionCompleted.amount_total / 100,
             shippingAddress : checkoutSessionCompleted.metadata,
