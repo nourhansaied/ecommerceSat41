@@ -100,7 +100,7 @@ const createCheckoutURL = catchError(async(req,res,next) => {
 
 
 const createdOnlineOrder = catchError(async(req, res) => {
-    const sig = req.headers['stripe-signature'];
+    const sig = req.headers['stripe-signature'].toString();
   
     let event;
   
