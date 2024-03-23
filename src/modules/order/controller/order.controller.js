@@ -112,6 +112,34 @@ const createdOnlineOrder = catchError(async(req, res) => {
   
     if(event.type == "checkout.session.completed") {
         const checkoutSessionCompleted = event.data.object;
+        let cart = await cartModel.findById(checkoutSessionCompleted.client_reference_id);
+        if(!cart) return next (new AppError("cart not found", 404))
+    
+        // 2- total price
+        // 3- create oder
+        let order = new orderModel({
+            user: req.user._id,
+            orderItems: cart.cartItems,
+            totalPrice: checkoutSessionCompleted.amount_total / 100,
+            shippingAddress : checkoutSessionCompleted.metadata,
+            paymentType:"card",
+            isPaid:true,
+            paidAt:Date.now()
+        });
+        await order.save();
+
+        let options = cart.cartItems.map(ele =>{
+            return (
+                {
+                    updateOne:{
+                        filter: {_id: ele.product},
+                        update: { $inc: {sold: ele.quantity,quantity: -ele.quantity}}
+                    }
+                }
+            )
+        })
+        
+        await productModel.bulkWrite(options)
         // create order
         console.log("completed");
     }else {
